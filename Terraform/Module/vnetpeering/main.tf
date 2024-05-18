@@ -1,7 +1,4 @@
 
-
-
-
 resource "azurerm_virtual_network_peering" "peer1topeer2" {
   name                      = "peer1to2"
   resource_group_name       = "14MayRG2024"
