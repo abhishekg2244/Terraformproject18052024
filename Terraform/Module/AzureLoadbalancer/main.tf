@@ -1,5 +1,5 @@
 resource "azurerm_public_ip" "lbpublicipblock" {
-    for_each = var.lb-module-variable
+    for_each = var.lbvariable
   name                = each.value.pip-name
   location            =each.value.location
   resource_group_name = each.value.resource_group_name
@@ -8,7 +8,7 @@ resource "azurerm_public_ip" "lbpublicipblock" {
 }
 
 resource "azurerm_lb" "lbblock" {
-    for_each = var.lb-module-variable
+    for_each = var.lbvariable
   name                = each.value.lbname
   location            =each.value.location
   resource_group_name = each.value.resource_group_name
@@ -21,21 +21,21 @@ resource "azurerm_lb" "lbblock" {
 }
 
 resource "azurerm_lb_backend_address_pool" "backendpoolblock" {
-    for_each = var.lb-module-variable
+    for_each = var.lbvariable
   loadbalancer_id = azurerm_lb.lbblock[each.key].id
   name            = each.value.backendpoolname
 }
 
 
 resource "azurerm_lb_probe" "probeblock" {
-    for_each = var.lb-module-variable
+    for_each = var.lbvariable
   loadbalancer_id = azurerm_lb.lbblock[each.key].id
   name            = each.value.probename
   port            = 22
 }
 
 resource "azurerm_lb_rule" "lbruleblock" {
-    for_each = var.lb-module-variable
+    for_each = var.lbvariable
   loadbalancer_id                = azurerm_lb.lbblock[each.key].id
   name                           = "LBRule"
   protocol                       = "Tcp"
@@ -47,7 +47,7 @@ resource "azurerm_lb_rule" "lbruleblock" {
 }
 
 resource "azurerm_lb_backend_address_pool_address" "addpool1" {
-    for_each = var.lb-module-variable
+    for_each = var.lbvariable
   name                    = "Appvm1"
   backend_address_pool_id = data.azurerm_lb_backend_address_pool.databackendaddresspool[each.key].id
   virtual_network_id      = data.azurerm_virtual_network.datablockvnet[each.key].id
@@ -55,21 +55,21 @@ resource "azurerm_lb_backend_address_pool_address" "addpool1" {
 
 }
 resource "azurerm_lb_backend_address_pool_address" "addpool2" {
-    for_each = var.lb-module-variable
+    for_each = var.lbvariable
   name                    = "appvm2"
   backend_address_pool_id = data.azurerm_lb_backend_address_pool.databackendaddresspool[each.key].id
   virtual_network_id      = data.azurerm_virtual_network.datablockvnet[each.key].id
   ip_address              = "10.1.1.4"
 }
 data "azurerm_virtual_network" "datablockvnet" {
-    for_each = var.lb-module-variable
+    for_each = var.lbvariable
   name                = "frontendvnet"
   resource_group_name = "14MayRG2024"
 
 }
 
 data "azurerm_lb_backend_address_pool" "databackendaddresspool" {
-    for_each = var.lb-module-variable
+    for_each = var.lbvariable
   name            = azurerm_lb_backend_address_pool.backendpoolblock[each.key].name
   loadbalancer_id = azurerm_lb.lbblock[each.key].id
 }
